@@ -7,8 +7,8 @@ namespace Ui {
 class MainWindow;
 }
 
-class MainWindow : public QMainWindow
-{
+class MainWindow : public QMainWindow {
+
     Q_OBJECT
 
 public:
@@ -23,6 +23,10 @@ private slots:
     void on_tabWidget_tabCloseRequested(int index);
 
     void on_actionQuit_triggered();
+
+    void close_current_tab();
+
+    void on_actionOpen_triggered();
 
 private:
     Ui::MainWindow *ui;
