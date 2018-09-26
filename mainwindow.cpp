@@ -6,29 +6,29 @@
 #include <content.h>
 #include <QDebug>
 #include <QAction>
+#include <QShortcut>
 #include <iostream>
+#include <QFileDialog>
+#include <QTextStream>
+#include <QFile>
 
-void lol(int index) {
-
-    std::cout << "nigger" << std::endl;
-}
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
-{
-    ui->setupUi(this);
-    QAction *close_tab = new QAction;
+    ui(new Ui::MainWindow) {
 
-    close_tab->setShortcut(Qt::Key_W | Qt::CTRL);
-    connect(close_tab, SIGNAL(triggered()), this, SLOT(close())); //fix this to close a tab later
-    this->addAction(close_tab);
+    ui->setupUi(this);
+
+    QShortcut *close_tabs = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_W), this);
+
+    QObject::connect(close_tabs, &QShortcut::activated, this, &MainWindow::close_current_tab);
+
     setCentralWidget(ui->tabWidget); //Set this to a Tabs class which should inherit from a QWidget
 
 }
 
-MainWindow::~MainWindow()
-{
+MainWindow::~MainWindow() {
+
     delete ui;
 }
 
@@ -52,4 +52,29 @@ void MainWindow::on_tabWidget_tabCloseRequested(int index) {
 
 void MainWindow::on_actionQuit_triggered() {
     qApp->quit();
+}
+
+void MainWindow::close_current_tab() {
+    int current_widget = ui->tabWidget->currentIndex();
+    ui->tabWidget->removeTab(current_widget);
+
+}
+
+void MainWindow::on_actionOpen_triggered() {
+
+    QTextStream out(stdout);
+    QFileDialog *file_dialog = new QFileDialog;
+    QStringList our_file = file_dialog->getOpenFileNames();
+    QString file_name = our_file[0];
+
+    QFile file(file_name);
+    file.open(QIODevice::ReadOnly);
+
+    QString cont;
+    cont.append(file.readAll());
+
+    Content *editor= new Content(this, cont, file_name, file_name);
+    int index = ui->tabWidget->addTab(editor, editor->baseName);
+    ui->tabWidget->setCurrentIndex(index);
+
 }
