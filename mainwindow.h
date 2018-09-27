@@ -28,6 +28,14 @@ private slots:
 
     void on_actionOpen_triggered();
 
+    void on_actionSave_triggered();
+
+    void on_actionRun_triggered();
+
+    void testFunction();
+
+    void changeName();
+
 private:
     Ui::MainWindow *ui;
 };
