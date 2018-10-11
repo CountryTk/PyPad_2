@@ -20,6 +20,7 @@ CodeEditor::CodeEditor(QWidget *parent, QString text, QString filename, QString 
     connect(this, &QPlainTextEdit::cursorPositionChanged, this, &CodeEditor::highlightCurrentLine);
 
     QString filenames = QFileInfo(fileName).completeSuffix();
+
     if (filenames == "py") {
         highlighter *syntax = new highlighter(this->document(), "py");
 
