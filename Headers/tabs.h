@@ -9,6 +9,7 @@
 #include <QSplitter>
 #include <QList>
 #include <QDebug>
+#include <QFont>
 
 class Tabs : public QWidget {
 
@@ -19,6 +20,7 @@ public:
     QHBoxLayout *layout = new QHBoxLayout(this);
     QTabWidget *tab = new QTabWidget;
     console *our_console = new console;
+    QFont *font = new QFont;
     Directory *dir_view = new Directory(this, "C:");
     QHBoxLayout *tab_layout = new QHBoxLayout;
     QHBoxLayout *search_layout = new QHBoxLayout; // not used at the moment
