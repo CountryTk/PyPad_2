@@ -4,19 +4,18 @@
 #include <QDir>
 #include <QTreeView>
 #include <QDebug>
-#include <QList>
 
 Directory::Directory(QWidget *parent, QString callback) {
 
     QFont *font = new QFont;
     QString open_callback = callback;
-    QHBoxLayout *layout = new QHBoxLayout;
     QList<int> list = {200, 600};
+    QDir *rootdir = new QDir;
 
     font->setFamily("Consolas");
     font->setPointSize(12);
-    //dir->rootPath()
-    model->setRootPath("C:");
+
+    model->setRootPath(rootdir->rootPath());
 
     view->setMaximumWidth(300);
     view->setIndentation(10);
@@ -30,14 +29,10 @@ Directory::Directory(QWidget *parent, QString callback) {
     //layout->addWidget(view);
     //this->setLayout(layout);
     this->setFont(*font);
-    qDebug() << view;
-    qDebug() << view->maximumWidth();
     //QObject::connect(view, &QTreeView::doubleClicked, this, &Directory::open_file);
     this->setVisible(false);
-    qDebug() << "wtf";
 }
 
-void Directory::open_file(QModelIndex signal) {
-    file_name = model->filePath(signal);
-    qDebug() << file_name;
+void Directory::open_directory(QString path) {
+    view->setRootIndex(model->index(path));
 }
