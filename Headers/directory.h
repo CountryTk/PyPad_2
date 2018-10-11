@@ -13,6 +13,6 @@ public:
     QFileSystemModel *model = new QFileSystemModel;
     QString file_name;
 
-    void open_file(QModelIndex signal);
+    void open_directory(QString path);
 };
 #endif // DIRECTORY_H
