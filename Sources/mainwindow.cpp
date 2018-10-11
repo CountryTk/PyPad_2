@@ -21,9 +21,6 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow) {
 
     tab_class = new Tabs;
-    dir = new Directory;
-    qDebug() << dir->view;
-    //qDebug() << "wa";
     ui->setupUi(this);
     QShortcut *close_tabs = new QShortcut(QKeySequence(Qt::CTRL + Qt::Key_W), this);
     QShortcut *run_file = new QShortcut(QKeySequence(Qt::SHIFT + Qt::Key_F10), this);
@@ -33,8 +30,8 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(run_file, &QShortcut::activated, this, &MainWindow::on_actionRun_triggered);
     QObject::connect(close_tabs, &QShortcut::activated, this, &MainWindow::close_current_tab);
     QObject::connect(test, &QShortcut::activated, tab_class, &Tabs::showDirectory);
-    qDebug() << dir->view->maximumWidth();
-    qDebug() << QObject::connect(dir->view, &QTreeView::doubleClicked, this, &MainWindow::on_actionQuit_triggered);
+    QObject::connect(tab_class->dir_view->view, &QTreeView::doubleClicked, this, &MainWindow::open_file_from_menu);
+
     setCentralWidget(tab_class);
 
 }
@@ -78,26 +75,12 @@ void MainWindow::on_actionOpen_triggered() {
     QStringList our_file = file_dialog->getOpenFileNames();
     QString file_name;
     int list_length;
+    file_name = our_file[0];
 
     list_length = our_file.length();
     if (list_length > 0) { //This is to prevent any runtime errors when closing the file opening dialog
 
-        file_name = our_file[0];
-        QFileInfo base_file_name(file_name);
-        QFile file(file_name);
-        QString base_name = base_file_name.completeBaseName();
-        QString suffix = base_file_name.suffix();
-
-        base_name = base_name + "." + suffix; //base_name = main.py, content.cpp, etc
-
-        file.open(QIODevice::ReadOnly);
-
-        QString cont; // contents of the file
-        cont.append(file.readAll());
-        CodeEditor *editor= new CodeEditor(this, cont, file_name, base_name);
-        QObject::connect(editor, &QPlainTextEdit::textChanged, this, &MainWindow::changeName);
-        int index = tab_class->tab->addTab(editor, editor->baseName);
-        tab_class->tab->setCurrentIndex(index);
+        open_file_universal(file_name);
 
     } else {
         qDebug() << "No file selected";
@@ -203,5 +186,53 @@ void MainWindow::on_actionSave_as_triggered() {
 void MainWindow::open_file_from_menu(QModelIndex signal) {
 
     QString lol = "ni";
-    qDebug() << signal;
+    QString file = tab_class->dir_view->model->filePath(signal);
+    open_file_universal(file);
+
 }
+
+void MainWindow::open_file_universal(QString file_name) {
+
+    QFileInfo file_info(file_name);
+    QFile file(file_name);
+    QString base_name = file_info.completeBaseName();
+    QString suffix = file_info.suffix();
+    base_name = base_name + "." + suffix; //base_name = main.py, content.cpp, etc
+
+    if (!file_info.isDir() || !file_info.isExecutable()) { // if the file that is trying to be opened isn't a dir or an exe file
+        file.open(QIODevice::ReadOnly);
+
+        QString cont; // contents of the file
+        cont.append(file.readAll());
+        CodeEditor *editor= new CodeEditor(this, cont, file_name, base_name);
+        QObject::connect(editor, &QPlainTextEdit::textChanged, this, &MainWindow::changeName);
+        int index = tab_class->tab->addTab(editor, editor->baseName);
+        tab_class->tab->setCurrentIndex(index);
+
+    } else {
+        qDebug() << "Directory";
+    }
+}
+
+bool MainWindow::open_project() {
+
+    QFileDialog *file_dialog = new QFileDialog;
+
+    QString dir = file_dialog->getExistingDirectory(nullptr, "Select a folder:","", QFileDialog::ShowDirsOnly);
+    if (dir == "") {
+        qDebug() << "FIle dialog closed";
+        return false;
+    } else {
+        tab_class->dir_view->open_directory(dir);
+        return true;
+    }
+}
+
+void MainWindow::on_actionOpen_project_triggered() {
+    if (open_project() == true) {
+        tab_class->showDirectory();
+    } else {
+        qDebug() << "No directory selected";
+ }
+}
+
