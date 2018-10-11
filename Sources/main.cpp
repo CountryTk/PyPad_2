@@ -28,12 +28,12 @@ int main(int argc, char *argv[])
     palette->setColor(QPalette::ButtonText, QColor("#FFFFFF"));
     palette->setColor(QPalette::Highlight, QColor("#4DD2FF"));
     palette->setColor(QPalette::HighlightedText, QColor("#000000"));
+
     a.setStyle("Fusion");
     a.setPalette(*palette);
 
     main_window->show();
-    main_window->setWindowTitle("PyPad ~ ");
-    //main_window->setWindowFlags(Qt::FramelessWindowHint);
+    main_window->setWindowTitle("PyPad");
     return a.exec();
 
 }
