@@ -16,6 +16,9 @@ Tabs::Tabs(QWidget *parent) : QWidget(parent) {
     tab_layout->addWidget(tab);
    // qDebug() << "wtdsadf";
     tab->setTabsClosable(true);
+    font->setFamily("Consolas");
+    font->setPointSize(10);
+    tab->tabBar()->setFont(*font);
     QObject::connect(tab, &QTabWidget::tabCloseRequested, this, &Tabs::tab_close_requested);
    // qDebug() << "wtf";
     layout->addLayout(tab_layout);
