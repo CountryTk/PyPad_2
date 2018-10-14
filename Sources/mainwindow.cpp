@@ -31,6 +31,7 @@ MainWindow::MainWindow(QWidget *parent) :
     QObject::connect(close_tabs, &QShortcut::activated, this, &MainWindow::close_current_tab);
     QObject::connect(test, &QShortcut::activated, tab_class, &Tabs::showDirectory);
     QObject::connect(tab_class->dir_view->view, &QTreeView::doubleClicked, this, &MainWindow::open_file_from_menu);
+    QObject::connect(tab_class->tab, &QTabWidget::tabCloseRequested, this, &MainWindow::tab_close_requested);
 
     setCentralWidget(tab_class);
 
@@ -65,7 +66,7 @@ void MainWindow::on_actionQuit_triggered() {
 void MainWindow::close_current_tab() {
 
     int current_widget = tab_class->tab->currentIndex();
-    tab_class->tab->removeTab(current_widget);
+    tab_close_requested(current_widget);
 }
 
 void MainWindow::on_actionOpen_triggered() {
@@ -74,16 +75,14 @@ void MainWindow::on_actionOpen_triggered() {
     QFileDialog *file_dialog = new QFileDialog;
     QStringList our_file = file_dialog->getOpenFileNames();
     QString file_name;
-    int list_length;
-    file_name = our_file[0];
 
-    list_length = our_file.length();
-    if (list_length > 0) { //This is to prevent any runtime errors when closing the file opening dialog
+    if (our_file.length() != 0) { //This is to prevent any runtime errors when closing the file opening dialog
+        file_name = our_file[0];
 
         open_file_universal(file_name);
 
     } else {
-        qDebug() << "No file selected";
+        qDebug() << file_name;
     }
 }
 
@@ -99,7 +98,7 @@ void MainWindow::on_actionSave_triggered() {
         QString current_file = content_object->fileName;
 
         tab_class->tab->setTabText(current_index, content_object->baseName);
-
+        modified = false;
         QFile file(current_file);
         file.open(QIODevice::WriteOnly);
         QTextStream stream(&file);
@@ -133,7 +132,7 @@ void MainWindow::changeName() {
     if (current != nullptr) {
         CodeEditor *content_object = dynamic_cast<CodeEditor*>(current);
         QString current_file = content_object->baseName;
-
+        modified = true;
         tab_class->tab->setTabText(current_index, current_file + "*");
     }
 }
@@ -177,6 +176,7 @@ void MainWindow::on_actionSave_as_triggered() {
         QObject::connect(editor, &QPlainTextEdit::textChanged, this, &MainWindow::changeName);
         int index = tab_class->tab->addTab(editor, editor->baseName);
         tab_class->tab->setCurrentIndex(index);
+        modified = false;
 
     } else {
         qDebug() << "Can't save to an empty file";
@@ -236,3 +236,9 @@ void MainWindow::on_actionOpen_project_triggered() {
  }
 }
 
+void MainWindow::tab_close_requested(int index) {
+
+    if (!modified) {
+        tab_class->tab->removeTab(index);
+    }
+}
