@@ -14,5 +14,10 @@ public:
     QString file_name;
 
     void open_directory(QString path);
+
+protected:
+    void keyPressEvent(QKeyEvent *event) override;
+
 };
 #endif // DIRECTORY_H
+
