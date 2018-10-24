@@ -3,7 +3,7 @@
 
 #include <QPlainTextEdit>
 #include <QObject>
-
+#include <plaintextedit.h>
 class QPaintEvent;
 class QResizeEvent;
 class QSize;
@@ -12,7 +12,7 @@ class QWidget;
 class LineNumberArea;
 
 
-class CodeEditor : public QPlainTextEdit {
+class CodeEditor : public PlainTextEdit {
 
     Q_OBJECT
 
@@ -24,6 +24,7 @@ public:
     QString baseName;
 
     void lineNumberAreaPaintEvent(QPaintEvent *event);
+
     int lineNumberAreaWidth();
 
 protected:
