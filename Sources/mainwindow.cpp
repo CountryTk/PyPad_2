@@ -15,6 +15,8 @@
 #include <console.h>
 #include <directory.h>
 #include <tabs.h>
+#include <random>
+#include <image.h>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -44,7 +46,11 @@ MainWindow::~MainWindow() {
 
 void MainWindow::on_actionNew_file_triggered() {
 
-    CodeEditor *tab = new CodeEditor(this, "", "Untitled_file.py", "Untitled_file.py");
+    int value = 100;
+
+    int random_value = qrand() % value;
+    QString file_name = "Untitled_file_" + QString::number(random_value) + ".py";
+    CodeEditor *tab = new CodeEditor(this, "", file_name, file_name);
     int index = tab_class->tab->addTab(tab, tab->baseName);
 
     QObject::connect(tab, &CodeEditor::textChanged, this, &MainWindow::changeName);
@@ -79,7 +85,11 @@ void MainWindow::on_actionOpen_triggered() {
     if (our_file.length() != 0) { //This is to prevent any runtime errors when closing the file opening dialog
         file_name = our_file[0];
 
-        open_file_universal(file_name);
+        if (file_name.endsWith("png") || file_name.endsWith("bmp") || file_name.endsWith("jpg") || file_name.endsWith("jpeg") || file_name.endsWith("gif")) {
+            open_file_universal(file_name, true);
+        } else {
+            open_file_universal(file_name, false);
+        }
 
     } else {
         qDebug() << file_name;
@@ -179,19 +189,23 @@ void MainWindow::on_actionSave_as_triggered() {
         modified = false;
 
     } else {
+
         qDebug() << "Can't save to an empty file";
     }
 
 }
 void MainWindow::open_file_from_menu(QModelIndex signal) {
 
-    QString lol = "ni";
     QString file = tab_class->dir_view->model->filePath(signal);
-    open_file_universal(file);
+    if (file.endsWith("png") || file.endsWith("bmp") || file.endsWith("jpg") || file.endsWith("jpeg") || file.endsWith("gif")) {
+        open_file_universal(file, true);
+    } else {
+        open_file_universal(file, false);
+    }
 
 }
 
-void MainWindow::open_file_universal(QString file_name) {
+void MainWindow::open_file_universal(QString file_name, bool is_image) {
 
     QFileInfo file_info(file_name);
     QFile file(file_name);
@@ -199,9 +213,14 @@ void MainWindow::open_file_universal(QString file_name) {
     QString suffix = file_info.suffix();
     base_name = base_name + "." + suffix; //base_name = main.py, content.cpp, etc
 
-    if (!file_info.isDir() || !file_info.isExecutable()) { // if the file that is trying to be opened isn't a dir or an exe file
-        file.open(QIODevice::ReadOnly);
+    if (is_image) {
+        image *img = new image(this, file_name, base_name);
+        int index = tab_class->tab->addTab(img, img->base_name);
+        tab_class->tab->setCurrentIndex(index);
 
+    } else if (!file_info.isDir() || !file_info.isExecutable()) { // if the file that is trying to be opened isn't a dir or an exe file
+        file.open(QIODevice::ReadOnly);
+        qDebug() << file_name;
         QString cont; // contents of the file
         cont.append(file.readAll());
         CodeEditor *editor= new CodeEditor(this, cont, file_name, base_name);
@@ -210,7 +229,7 @@ void MainWindow::open_file_universal(QString file_name) {
         tab_class->tab->setCurrentIndex(index);
 
     } else {
-        qDebug() << "Directory";
+        qDebug() << "Error";
     }
 }
 
