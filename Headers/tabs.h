@@ -31,8 +31,8 @@ signals:
 public slots:
     void showDirectory();
 
-private slots:
-    void tab_close_requested(int index);
+//private slots:
+    //void tab_close_requested(int index);
 
 };
 
