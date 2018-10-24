@@ -12,32 +12,24 @@
 #include <QMainWindow>
 
 Tabs::Tabs(QWidget *parent) : QWidget(parent) {
-   // qDebug() << "wtdsadsadsadsadf";
+
     tab_layout->addWidget(tab);
-   // qDebug() << "wtdsadf";
     tab->setTabsClosable(true);
     font->setFamily("Consolas");
     font->setPointSize(10);
     tab->tabBar()->setFont(*font);
-    QObject::connect(tab, &QTabWidget::tabCloseRequested, this, &Tabs::tab_close_requested);
-   // qDebug() << "wtf";
     layout->addLayout(tab_layout);
-    //qDebug() << "wtfs";
     this->setLayout(layout);
-   // qDebug() << "wtfdsa";
 }
 
-void Tabs::tab_close_requested(int index) {
-
-    tab->removeTab(index);
-}
 void Tabs::showDirectory() {
     dir_view->setVisible(true);
     tab_layout->removeWidget(tab);
+   // dir_view->show();
     tab_layout->addWidget(dir_view->view);
+
+    qDebug() << dir_view;
     tab_layout->addWidget(tab);
     dir_view->hide();
 
-
-   // auto p = dynamic_cast<QMainWindow*>(parent());
 }
