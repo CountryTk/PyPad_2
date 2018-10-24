@@ -26,13 +26,17 @@ Directory::Directory(QWidget *parent, QString callback) {
     view->hideColumn(1);
     view->hideColumn(2);
     view->hideColumn(3);
-    //layout->addWidget(view);
-    //this->setLayout(layout);
+
     this->setFont(*font);
-    //QObject::connect(view, &QTreeView::doubleClicked, this, &Directory::open_file);
     this->setVisible(false);
 }
 
 void Directory::open_directory(QString path) {
     view->setRootIndex(model->index(path));
 }
+
+void Directory::keyPressEvent(QKeyEvent *e) {
+
+    qDebug() << e;
+}
+
