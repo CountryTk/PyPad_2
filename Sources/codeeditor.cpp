@@ -5,8 +5,11 @@
 #include <iostream>
 #include <QFileInfo>
 #include <highlighter.h>
+#include <QPlainTextEdit>
+#include <QShortcut>
+#include <QKeySequence>
 
-CodeEditor::CodeEditor(QWidget *parent, QString text, QString filename, QString basename) : QPlainTextEdit(parent)
+CodeEditor::CodeEditor(QWidget *parent, QString text, QString filename, QString basename) : PlainTextEdit(parent)
 {
     lineNumberArea = new LineNumberArea(this);
     content = text;
